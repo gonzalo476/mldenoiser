@@ -1,19 +1,19 @@
 cmake_minimum_required(VERSION 3.18 FATAL_ERROR)
 project(MLDenoiser)
 
-# Configuración de compilación
+# Build configuration
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /arch:AVX /EHsc ${TORCH_CXX_FLAGS}")
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 
-# Opciones para versiones de Nuke
+# Options for Nuke versions
 option(NUKE_11.3 "Nuke 11.3" OFF)
 option(NUKE_12.0 "Nuke 12.0" OFF)
 option(NUKE_12.1 "Nuke 12.1" ON)
 option(NUKE_12.2 "Nuke 12.2" OFF)
 
-# Configuración de rutas para Nuke
+# Path configuration for Nuke
 if (NUKE_11.3)
     include_directories("C:/Program Files/Nuke11.3v4/include")
     link_directories("C:/Program Files/Nuke11.3v4")
@@ -34,22 +34,22 @@ if (NUKE_12.2)
     link_directories("C:/Program Files/Nuke12.2v11")
 endif()
 
-# Encontrar Qt5
+# Find Qt5
 find_package(Qt5 REQUIRED COMPONENTS Widgets)
 
-# Encontrar OpenCV
+# Find OpenCV
 find_package(OpenCV REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
 
-# Incluir LibTorch
+# Include LibTorch
 find_package(Torch REQUIRED)
 
-# Definir la biblioteca
+# Define the library
 add_library(${CMAKE_PROJECT_NAME} SHARED 
     src/mldenoiser.cpp
 )
 
-# Enlazar bibliotecas
+# Link libraries
 target_link_libraries(${CMAKE_PROJECT_NAME} 
     Qt5::Widgets 
     ${OpenCV_LIBS} 
@@ -57,7 +57,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
     DDImage
 )
 
-# Copiar DLLs para Windows según la recomendación de PyTorch
+# Copy DLLs for Windows as per PyTorch recommendation
 if (MSVC)
   file(GLOB TORCH_DLLS "${TORCH_INSTALL_PREFIX}/lib/*.dll")
   add_custom_command(TARGET ${CMAKE_PROJECT_NAME}
@@ -67,7 +67,7 @@ if (MSVC)
                      $<TARGET_FILE_DIR:${CMAKE_PROJECT_NAME}>)
 endif()
 
-# Instalación automática del plugin en el directorio de Nuke
+# Automatic installation of the plugin in the Nuke directory
 if(WIN32)
   set(PLUGIN_INSTALL_DIR "C:/Users/rojas/.nuke")
 else()
